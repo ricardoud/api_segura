@@ -3,4 +3,4 @@ node_modules/
 .env
 *.log
 database.db
-.DS_Storegit add .
+.DS_Storegit add .git
