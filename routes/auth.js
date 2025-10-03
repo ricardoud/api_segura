@@ -45,24 +45,29 @@ router.post('/login', (req, res) => {
 
   const sql = 'SELECT * FROM users WHERE username = ?';
   db.get(sql, [username], (err, user) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (!user) return res.status(400).json({ error: 'Usuario no encontrado.' });
+    if (err || !user) {
+      return res.status(401).json({ error: 'Credenciales inválidas.' });
+    }
 
-    // Comparar contraseña
     bcrypt.compare(password, user.password_hash, (err, result) => {
-      if (err) return res.status(500).json({ error: 'Error al verificar la contraseña.' });
-      if (!result) return res.status(401).json({ error: 'Contraseña incorrecta.' });
+      if (err || !result) {
+        return res.status(401).json({ error: 'Credenciales inválidas.' });
+      }
 
-      // Generar token JWT
-      const token = jwt.sign(
-        { id: user.id, username: user.username, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-      );
+      // Credenciales válidas, generar JWT
+      const payload = { id: user.id, username: user.username, role: user.role };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-      res.json({
-        message: 'Login exitoso.',
-        token
+      // Enviar token en cookie segura
+      res.cookie('token', token, {
+        httpOnly: true,                    // No accesible por JavaScript
+        secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
+        sameSite: 'strict'                 // Mitigación de CSRF
+      });
+
+      res.status(200).json({
+        message: 'Inicio de sesión exitoso.',
+        token  // También puedes devolver el token en el body si quieres usarlo en front-end
       });
     });
   });
