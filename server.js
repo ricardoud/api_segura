@@ -1,10 +1,9 @@
-require('dotenv').config(); // Cargar variables de entorno
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
-const db = require('./database/database'); 
-
+const db = require('./database/database'); // Conexión SQLite
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,17 +16,24 @@ app.use(cookieParser());
 
 // Ruta de prueba
 app.get('/', (req, res) => {
-  res.json({ message: 'API de la aplicación segura funcionando correctamente.' });
+  res.json({ message: 'API funcionando correctamente.' });
 });
 
-// Ejemplo de ruta para listar usuarios
+// Listar usuarios (sin contraseñas)
 app.get('/users', (req, res) => {
   const sql = "SELECT id, username, role FROM users";
   db.all(sql, [], (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+    if (err) return res.status(500).json({ error: err.message });
     res.json({ users: rows });
+  });
+});
+
+// Listar productos
+app.get('/products', (req, res) => {
+  const sql = "SELECT * FROM products";
+  db.all(sql, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ products: rows });
   });
 });
 
