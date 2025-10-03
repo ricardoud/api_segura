@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const db = require('./database/database'); // Conexión SQLite
+const authRoutes = require('./routes/auth'); // Rutas de autenticación
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,12 +15,11 @@ app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
 
-// Ruta de prueba
+// Rutas de prueba
 app.get('/', (req, res) => {
   res.json({ message: 'API funcionando correctamente.' });
 });
 
-// Listar usuarios (sin contraseñas)
 app.get('/users', (req, res) => {
   const sql = "SELECT id, username, role FROM users";
   db.all(sql, [], (err, rows) => {
@@ -28,7 +28,6 @@ app.get('/users', (req, res) => {
   });
 });
 
-// Listar productos
 app.get('/products', (req, res) => {
   const sql = "SELECT * FROM products";
   db.all(sql, [], (err, rows) => {
@@ -37,7 +36,14 @@ app.get('/products', (req, res) => {
   });
 });
 
+// ============================
+// Rutas de autenticación
+// ============================
+app.use('/auth', authRoutes);
+
+// ============================
 // Iniciar servidor
+// ============================
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
