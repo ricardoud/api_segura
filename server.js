@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
-const db = require('./database/database'); // Conexión a SQLite
+const db = require('./database/database'); 
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
