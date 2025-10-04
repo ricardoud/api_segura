@@ -1,3 +1,4 @@
+// Archivo: backend/routes/auth.js
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -5,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../database/database');
 
 // ============================
-// Endpoint: Registro de usuario
+// Registro de usuario
 // ============================
 router.post('/register', (req, res) => {
   const { username, password } = req.body;
@@ -16,7 +17,9 @@ router.post('/register', (req, res) => {
 
   const saltRounds = 10;
   bcrypt.hash(password, saltRounds, (err, hash) => {
-    if (err) return res.status(500).json({ error: 'Error al hashear la contraseña.' });
+    if (err) {
+      return res.status(500).json({ error: 'Error al hashear la contraseña.' });
+    }
 
     const sql = 'INSERT INTO users (username, password_hash) VALUES (?,?)';
     const params = [username, hash];
@@ -34,7 +37,7 @@ router.post('/register', (req, res) => {
 });
 
 // ============================
-// Endpoint: Login de usuario
+// Inicio de sesión
 // ============================
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
@@ -55,22 +58,31 @@ router.post('/login', (req, res) => {
       }
 
       // Credenciales válidas, generar JWT
-      const payload = { id: user.id, username: user.username, role: user.role };
+      const payload = { id: user.id, role: user.role };
       const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-      // Enviar token en cookie segura
       res.cookie('token', token, {
-        httpOnly: true,                    // No accesible por JavaScript
-        secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
-        sameSite: 'strict'                 // Mitigación de CSRF
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
       });
 
-      res.status(200).json({
-        message: 'Inicio de sesión exitoso.',
-        token  // También puedes devolver el token en el body si quieres usarlo en front-end
-      });
+      res.status(200).json({ message: 'Inicio de sesión exitoso.' });
     });
   });
+});
+
+// ============================
+// Logout
+// ============================
+router.post('/logout', (req, res) => {
+  res.cookie('token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    expires: new Date(0)
+  });
+  res.status(200).json({ message: 'Sesión cerrada con éxito.' });
 });
 
 module.exports = router;
