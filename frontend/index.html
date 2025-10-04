@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplicación Segura</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Gestor de Productos</h1>
+    <div id="user-session" class="hidden">
+      <span id="welcome-message"></span>
+      <button id="logout-btn">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Vista de autenticación -->
+    <section id="auth-view">
+      <div class="form-container">
+        <h2>Registrarse</h2>
+        <form id="register-form">
+          <input type="text" id="register-username" placeholder="Nombre de usuario" required>
+          <input type="password" id="register-password" placeholder="Contraseña" required>
+          <button type="submit">Registrar</button>
+        </form>
+      </div>
+
+      <div class="form-container">
+        <h2>Iniciar Sesión</h2>
+        <form id="login-form">
+          <input type="text" id="login-username" placeholder="Nombre de usuario" required>
+          <input type="password" id="login-password" placeholder="Contraseña" required>
+          <button type="submit">Iniciar Sesión</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Vista de productos -->
+    <section id="products-view" class="hidden">
+      <h2>Mis Productos</h2>
+      <div id="my-products-list"></div>
+
+      <h2>Todos los Productos</h2>
+      <div id="all-products-list"></div>
+
+      <div class="form-container">
+        <h2>Añadir/Editar Producto</h2>
+        <form id="product-form">
+          <input type="hidden" id="product-id">
+          <input type="text" id="product-name" placeholder="Nombre del producto" required>
+          <textarea id="product-description" placeholder="Descripción"></textarea>
+          <button type="submit">Guardar Producto</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
